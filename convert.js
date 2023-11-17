@@ -18,7 +18,6 @@ if (!filepath) {
 const content = await fs.readFile(filepath);
 const records = parse(content, { bom: true, relax_column_count: true });
 
-// TODO: trim the strings
 // TODO: allow option to specify a date to go back as far as (i.e. filter out entries after that date)
 // TODO: add help for the function
 
@@ -37,47 +36,7 @@ const [
   rpe,
 ] = records[1];
 
-const workoutsIndex = records.findIndex(
-  (record) =>
-    Array.isArray(record) && record.length === 1 && record[0] === "Workouts"
-);
-
-const workoutsRaw = records.slice(workoutsIndex + 2); // strip meta data out
-// console.log(workoutsRaw);
-
-const workoutDividerIndices = workoutsRaw
-  .map((row, index) => (row.length === 1 && row[0] === "" ? index : undefined))
-  .filter((row) => row);
-
-// console.log(workoutDividerIndices);
-
-const workouts = workoutDividerIndices.map((dividerIndex, index, arr) => {
-  // TODO: we're not handling the last entry in csv as it's not got a divider
-  // if (i + 1 === arr.length) {}
-
-  return workoutsRaw.slice(index > 0 ? arr[index - 1] + 1 : 0, dividerIndex);
-});
-
-console.log(workouts);
-
-// TODO: check if rpe is present in a row
-// TODO: check a row has sufficient info (min exercise name, set number, reps, weight. rpe optional)
-// TODO: ignore rows that don't fit a profile of either workoutHeader or exerciseEntry
-
-// console.log({
-//   date,
-//   workoutName,
-//   duration,
-//   exerciseName,
-//   setOrder,
-//   weight,
-//   reps,
-//   distance,
-//   seconds,
-//   notes,
-//   workoutNotes,
-//   rpe,
-// });
+console.log(records);
 
 // const writeFileName = `${format(
 //   new Date(),
