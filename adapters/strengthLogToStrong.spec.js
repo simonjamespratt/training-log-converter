@@ -479,6 +479,36 @@ describe("conversion", () => {
     it.each([
       { input: "Squat", output: "Squat (Barbell)" },
       { input: "Overhead Press", output: "Overhead Press (Barbell)" },
+      { input: "Lat Pulldown", output: "Lat Pulldown (Cable)" },
+      { input: "Standing Cable Chest Fly", output: "Cable Fly" },
+      { input: "Bench Press", output: "Bench Press (Barbell)" },
+      { input: "Pause Bench Press", output: "Paused Bench Press" },
+      { input: "Barbell Row", output: "Bent Over Row (Barbell)" },
+      { input: "Front Squat", output: "Front Squat (Barbell)" },
+      { input: "Close-Grip Pulldown", output: "Lat Pulldown (Cable)" },
+      { input: "Cable Lateral Raise", output: "Lateral Raise (Cable)" },
+      { input: "Kneeling Ab Wheel", output: "Ab Wheel" },
+      { input: "Dumbbell Curl", output: "Bicep Curl (Dumbbell)" },
+      { input: "Kneeling Push-Up", output: "Push Up (Knees)" },
+      { input: "Leg Extension", output: "Leg Extension (Machine)" },
+      { input: "Dumbbell Lunge", output: "Lunge (Dumbbell)" },
+      {
+        input: "Dumbbell Lying Triceps Extension",
+        output: "Lying Dumbbell Tricep Extension",
+      },
+      {
+        input: "Lying Dumbbell External Shoulder Rotation",
+        output: "Lying Dumbbell External Rotation",
+      },
+      {
+        input: "Lat Pulldown With Supinated Grip",
+        output: "Lat Pulldown (Cable)",
+      },
+      { input: "Face Pull", output: "Face Pull (Cable)" },
+      {
+        input: "Trap Bar Deadlift With Low Handles",
+        output: "Trap Bar Deadlift",
+      },
     ])("converts $input to $output", ({ input, output }) => {
       converter = new StrengthLogToStrongConverter([
         ...csvMetaData,
@@ -493,4 +523,7 @@ describe("conversion", () => {
   });
 });
 
-// TODO: map exercise names from SL to S
+// TODO: work out how each app handles dumbell weights: single or double
+// TODO: strip out exercises that strength level misinterpets
+// e.g. negative pull ups or assisted pull ups
+// Eccentric pull-up
