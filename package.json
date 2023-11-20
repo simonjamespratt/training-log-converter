@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "commander": "^11.1.0",
     "csv": "^6.3.5",
-    "date-fns": "^2.30.0",
-    "minimist": "^1.2.8"
+    "date-fns": "^2.30.0"
   },
   "type": "module",
   "devDependencies": {

@@ -1,47 +1,72 @@
-// command: node convert.js -filepath=some/path.csv
-import minimist from "minimist";
+// TODO: allow option to specify a date to go back as far as (i.e. filter out entries after that date)
+// TODO: work out how each app handles dumbell weights: single or double
+
+import { Argument, program } from "commander";
 import { promises as fs, writeFileSync } from "fs";
 import { parse } from "csv-parse/sync";
 import { stringify } from "csv-stringify/sync";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { format } from "date-fns";
-import { StrengthLogToStrongConverter } from "./adapters/strengthLogToStrong";
+import { StrengthLogToStrongConverter } from "./adapters/strengthLogToStrong.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const { filepath = null, jobType = null } = minimist(process.argv.slice(2));
 
-if (!filepath) {
-  throw new Error("No filepath provided!");
+function writeFile(records, from, to) {
+  const writeFileName = `${format(
+    new Date(),
+    "yyyy-MM-dd"
+  )}-${from}-to-${to}-format.csv`;
+
+  try {
+    writeFileSync(
+      `${__dirname}/converted-files/${writeFileName}`,
+      stringify(records)
+    );
+    console.log(`file named ${writeFileName} created in ${__dirname}`);
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-const content = await fs.readFile(filepath);
-const records = parse(content, { bom: true, relax_column_count: true });
+const trainingLogTypes = {
+  STRENGTH_LEVEL: "strength-level",
+  STRENGTH_LOG: "strength-log",
+  STRONG: "strong",
+};
 
-// TODO: allow option to specify a date to go back as far as (i.e. filter out entries after that date)
-// TODO: add help for the function
+program
+  .description("Convert a csv file from one training log to another")
+  .argument("<file>", "file to convert")
+  .addArgument(
+    new Argument("<from>", "type of training log the csv file is from").choices(
+      Object.values(trainingLogTypes)
+    )
+  )
+  .addArgument(
+    new Argument(
+      "<to>",
+      "type of training log the csv file should be converted to"
+    ).choices(Object.values(trainingLogTypes))
+  )
+  .action(async (file, from, to) => {
+    const content = await fs.readFile(file);
+    const records = parse(content, { bom: true, relax_column_count: true });
 
-let convertedRecords;
+    if (
+      from === trainingLogTypes.STRENGTH_LOG &&
+      to === trainingLogTypes.STRENGTH_LEVEL
+    ) {
+      const converter = new StrengthLogToStrongConverter(records);
+      // TODO: strip out exercises strength level won't understand - see below
+      writeFile(converter.convert(), from, to);
+    }
 
-if (jobType === "prep-strength-log-data-for-strength-level-import") {
-  const converter = new StrengthLogToStrongConverter(records);
-  // TODO: add function to prep strong data for strength level import
-  convertedRecords = converter.convert();
-}
+    // TODO: add function to prep strong data for strength level import
+    // strip out exercises that strength level misinterpets
+    // e.g. negative pull ups or assisted pull ups
+    // Eccentric pull-up
+  });
 
-// TODO: add function to prep strong data for strength level import
-
-const writeFileName = `${format(
-  new Date(),
-  "yyyy-MM-dd"
-)}-strengthlog-to-strong-format.csv`;
-try {
-  writeFileSync(
-    `${__dirname}/converted-files/${writeFileName}`,
-    stringify(convertedRecords)
-  );
-  console.log(`file named ${writeFileName} created in ${__dirname}`);
-} catch (err) {
-  console.error(err);
-}
+await program.parseAsync(process.argv);

@@ -1,5 +1,5 @@
 import { isValid, parse, set, format } from "date-fns";
-import { convertExerciseName } from "./exerciseLookUp";
+import { convertExerciseName } from "./exerciseLookUp.js";
 
 export class StrengthLogToStrongConverter {
   constructor(records) {

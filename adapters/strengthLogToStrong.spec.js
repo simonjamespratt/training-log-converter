@@ -522,8 +522,3 @@ describe("conversion", () => {
     });
   });
 });
-
-// TODO: work out how each app handles dumbell weights: single or double
-// TODO: strip out exercises that strength level misinterpets
-// e.g. negative pull ups or assisted pull ups
-// Eccentric pull-up
