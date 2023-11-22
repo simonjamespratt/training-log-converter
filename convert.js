@@ -1,5 +1,5 @@
 // TODO: work out how each app handles dumbell weights: single or double
-
+// TODO: prep the strong data to import - delete entries I don't want
 import { Argument, program } from "commander";
 import { promises as fs, writeFileSync } from "fs";
 import { parse } from "csv-parse/sync";
@@ -9,6 +9,7 @@ import { dirname } from "path";
 import { format } from "date-fns";
 import { StrengthLogToStrongConverter } from "./adapters/strengthLogToStrong.js";
 import { filterByDate } from "./adapters/filterByDate.js";
+import { prepStrongForStrengthLevel } from "./adapters/prepStrongForStrengthLevel.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -56,15 +57,28 @@ program
   )
   .action(async (file, from, to, options) => {
     const content = await fs.readFile(file);
-    const records = parse(content, { bom: true, relax_column_count: true });
+    let records = parse(content, { bom: true, relax_column_count: true });
 
     if (
       from === trainingLogTypes.STRENGTH_LOG &&
       to === trainingLogTypes.STRENGTH_LEVEL
     ) {
       const converter = new StrengthLogToStrongConverter(records);
-      // TODO: strip out exercises strength level won't understand - see below
-      let records = converter.convert();
+
+      records = converter.convert();
+
+      records = prepStrongForStrengthLevel(records);
+
+      if (options.date) {
+        records = filterByDate(records, options.date);
+      }
+
+      writeFile(records, from, to);
+    } else if (
+      from === trainingLogTypes.STRONG &&
+      to === trainingLogTypes.STRENGTH_LEVEL
+    ) {
+      records = prepStrongForStrengthLevel(records);
 
       if (options.date) {
         records = filterByDate(records, options.date);
@@ -72,13 +86,6 @@ program
 
       writeFile(records, from, to);
     }
-
-    // TODO: add function to prep strong data for strength level import
-    // filter by date if passed
-
-    // strip out exercises that strength level misinterpets
-    // e.g. negative pull ups or assisted pull ups
-    // Eccentric pull-up
   });
 
 await program.parseAsync(process.argv);

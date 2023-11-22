@@ -43,4 +43,10 @@ export function convertExerciseName(name, from, to) {
   return null;
 }
 
-export const strengthLevelUnknownExercises = ["Ring Row", "Pull Up (Band)"];
+export const strengthLevelUnknownExercises = [
+  "Ring Row",
+  "Pull Up (Band)",
+  "Pull Up Negative",
+  "Triceps Dip (Assisted)",
+  "Pull Up (Assisted)",
+];
