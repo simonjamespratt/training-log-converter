@@ -1,4 +1,3 @@
-// TODO: allow option to specify a date to go back as far as (i.e. filter out entries after that date)
 // TODO: work out how each app handles dumbell weights: single or double
 
 import { Argument, program } from "commander";
@@ -9,6 +8,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { format } from "date-fns";
 import { StrengthLogToStrongConverter } from "./adapters/strengthLogToStrong.js";
+import { filterByDate } from "./adapters/filterByDate.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -50,7 +50,11 @@ program
       "type of training log the csv file should be converted to"
     ).choices(Object.values(trainingLogTypes))
   )
-  .action(async (file, from, to) => {
+  .option(
+    "-d, --date <date>",
+    "specify a cut off date to return only records on or after that date. Must be in yyyy-MM-dd format"
+  )
+  .action(async (file, from, to, options) => {
     const content = await fs.readFile(file);
     const records = parse(content, { bom: true, relax_column_count: true });
 
@@ -60,10 +64,18 @@ program
     ) {
       const converter = new StrengthLogToStrongConverter(records);
       // TODO: strip out exercises strength level won't understand - see below
-      writeFile(converter.convert(), from, to);
+      let records = converter.convert();
+
+      if (options.date) {
+        records = filterByDate(records, options.date);
+      }
+
+      writeFile(records, from, to);
     }
 
     // TODO: add function to prep strong data for strength level import
+    // filter by date if passed
+
     // strip out exercises that strength level misinterpets
     // e.g. negative pull ups or assisted pull ups
     // Eccentric pull-up
