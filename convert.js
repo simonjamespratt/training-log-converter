@@ -1,5 +1,3 @@
-// TODO: work out how each app handles dumbell weights: single or double
-// TODO: prep the strong data to import - delete entries I don't want
 import { Argument, program } from "commander";
 import { promises as fs, writeFileSync } from "fs";
 import { parse } from "csv-parse/sync";
@@ -10,6 +8,7 @@ import { format } from "date-fns";
 import { StrengthLogToStrongConverter } from "./adapters/strengthLogToStrong.js";
 import { filterByDate } from "./adapters/filterByDate.js";
 import { prepStrongForStrengthLevel } from "./adapters/prepStrongForStrengthLevel.js";
+import { trainingLogTypes } from "./adapters/trainingLogTypes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -30,12 +29,6 @@ function writeFile(records, from, to) {
     console.error(err);
   }
 }
-
-const trainingLogTypes = {
-  STRENGTH_LEVEL: "strength-level",
-  STRENGTH_LOG: "strength-log",
-  STRONG: "strong",
-};
 
 program
   .description("Convert a csv file from one training log to another")
