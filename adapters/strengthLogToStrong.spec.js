@@ -365,17 +365,33 @@ describe("conversion", () => {
     expect(convertedData[5][1]).toEqual("Workout two");
   });
 
+  it.each([
+    { name: "duration", value: "1m", rowIndex: 2 },
+    { name: "distance", value: 0, rowIndex: 7 },
+    { name: "seconds", value: 0, rowIndex: 8 },
+  ])(
+    "gives each exercise row a valid default for $name",
+    ({ name, value, rowIndex }) => {
+      // disregard first row as it's the main header
+      expect(convertedData[1][rowIndex]).toEqual(value);
+      expect(convertedData[2][rowIndex]).toEqual(value);
+      expect(convertedData[3][rowIndex]).toEqual(value);
+      expect(convertedData[4][rowIndex]).toEqual(value);
+      expect(convertedData[5][rowIndex]).toEqual(value);
+    }
+  );
+
   it("populates the exercise row with the data in the order of a Strong csv output", () => {
     expect(convertedData[1]).toEqual([
       "2023-11-11 12:00:00",
       "Workout one",
-      "",
+      "1m",
       exercise.title,
       exercise.set,
       exercise.weight,
       exercise.reps,
-      "",
-      "",
+      0,
+      0,
       "",
       "",
       exercise.rpe,
@@ -386,13 +402,13 @@ describe("conversion", () => {
     expect(convertedData[2]).toEqual([
       "2023-11-11 12:00:00",
       "Workout one",
-      "",
+      "1m",
       exercise.title,
       exercise.set,
       exercise.weight,
       exercise.reps,
-      "",
-      "",
+      0,
+      0,
       "",
       "",
       "",

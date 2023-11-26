@@ -128,13 +128,13 @@ export class StrengthLogToStrongConverter {
     }
 
     return [
-      "",
+      "1m",
       this.#convertExerciseName(exerciseName),
       set,
       weight,
       reps,
-      "",
-      "",
+      0,
+      0,
       "",
       "",
       rpe,
