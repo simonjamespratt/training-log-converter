@@ -31,6 +31,7 @@ const lookUp = [
     strong: "Trap Bar Deadlift",
   },
   { strengthLog: "Barbell Row", strong: "Bent Over Row (Barbell)" },
+  { strengthLog: "Dumbbell Chest Press", strong: "Dumbbell Bench Press" },
 ];
 
 export function convertExerciseName(name, from, to) {
